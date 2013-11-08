@@ -5,7 +5,7 @@ A Node.JS module which provides an interface to all routes supported by the v1 G
 
 ### API Documentation
 
-Documentation for the GoInstant REST API is available at [https://developers.goinstant.com/v1/rest-client](https://developers.goinstant.com/v1/rest-client)
+Documentation for the GoInstant REST API is available at [https://developers.goinstant.com/v1/rest-api](https://developers.goinstant.com/v1/rest-api)
 
 ### Client Example
 
