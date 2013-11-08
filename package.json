@@ -30,5 +30,19 @@
     "grunt-contrib-jshint": "0.7.1",
     "grunt-mocha-test": "0.7.0",
     "grunt-cli": "~0.1.10"
-  }
+  },
+  "directories": {
+    "doc": "docs",
+    "test": "test"
+  },
+  "keywords": [
+    "goinstant",
+    "rest",
+    "client",
+    "multiuser",
+    "multi-user",
+    "keys",
+    "rest-client"
+  ],
+  "author": "Goinstant <support@goinstant.com> (http://www.goinstant.com/)"
 }
