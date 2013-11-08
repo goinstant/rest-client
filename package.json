@@ -1,0 +1,34 @@
+{
+  "name": "goinstant-rest",
+  "version": "1.0.0",
+  "description": "Client for GoInstant's REST API",
+  "main": "index.js",
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/goinstant/rest-client.git"
+  },
+  "license": "BSD",
+  "readmeFilename": "README.md",
+  "bugs": {
+    "url": "https://github.com/goinstant/rest-client/issues"
+  },
+  "scripts": {
+    "test": "grunt test"
+  },
+  "engines": {
+    "node": "0.10.x"
+  },
+  "dependencies": {
+    "lodash": "2.0.0",
+    "request": "2.27.0",
+    "async": "0.2.9"
+  },
+  "devDependencies": {
+    "gi-assert": "git+ssh://git@github.com:goinstant/assert.git#v1.0.0",
+    "sinon": "1.7.3",
+    "nock": "0.22.1",
+    "grunt-contrib-jshint": "0.7.1",
+    "grunt-mocha-test": "0.7.0",
+    "grunt-cli": "~0.1.10"
+  }
+}
