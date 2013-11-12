@@ -1,7 +1,7 @@
 /*jshint node:true*/
 'use strict';
 
-var assert = require('gi-assert');
+var assert = require('goinstant-assert');
 var sinon = require('sinon');
 
 var requestStub = require('../lib/request-stub');
@@ -58,6 +58,42 @@ describe('Devs v1', function() {
 
         assert.equal(args.method, 'GET');
         assert.equal(args.url, v1.client.endpoint + '/devs');
+
+        done();
+      });
+    });
+    it('is a GET to /devs with pagination (legacy naming)', function(done) {
+      v1.devs.all({
+        pageSize: 4,
+        pageNumber: 3
+      }, function() {
+        var call = clientSpy.getCall(0);
+        var args = call.args[0];
+
+        assert.equal(args.method, 'GET');
+        assert.equal(args.url, v1.client.endpoint + '/devs');
+        assert.deepEqual(args.qs, {
+          per_page: 4,
+          page: 3
+        });
+
+        done();
+      });
+    });
+    it('is a GET to /devs with pagination', function(done) {
+      v1.devs.all({
+        per_page: 4,
+        page: 3
+      }, function() {
+        var call = clientSpy.getCall(0);
+        var args = call.args[0];
+
+        assert.equal(args.method, 'GET');
+        assert.equal(args.url, v1.client.endpoint + '/devs');
+        assert.deepEqual(args.qs, {
+          per_page: 4,
+          page: 3
+        });
 
         done();
       });
