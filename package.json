@@ -29,7 +29,7 @@
     "grunt-contrib-jshint": "0.7.1",
     "grunt-mocha-test": "0.7.0",
     "grunt-cli": "0.1.10",
-    "goinstant-assert": "1.1.0"
+    "goinstant-assert": "1.1.1"
   },
   "directories": {
     "doc": "docs",
