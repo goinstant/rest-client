@@ -1,7 +1,7 @@
 /*jshint node:true*/
 'use strict';
 
-var assert = require('gi-assert');
+var assert = require('goinstant-assert');
 var sinon = require('sinon');
 
 var requestStub = require('../lib/request-stub');
@@ -87,6 +87,46 @@ describe('Rooms v1', function() {
 
         assert.equal(args.method, 'GET');
         assert.equal(args.url, v1.client.endpoint + '/apps/1/rooms');
+
+        done();
+      });
+    });
+    it('is a GET to /apps/:id/rooms with pagination (legacy naming)',
+       function(done) {
+
+      v1.apps.rooms.all({
+        app_id: 1,
+        pageSize: 5,
+        pageNumber: 4,
+      }, function() {
+        var call = clientSpy.getCall(0) || {};
+        var args = call.args[0];
+
+        assert.equal(args.method, 'GET');
+        assert.equal(args.url, v1.client.endpoint + '/apps/1/rooms');
+        assert.deepEqual(args.qs, {
+          per_page: 5,
+          page: 4
+        });
+
+        done();
+      });
+    });
+    it('is a GET to /apps/:id/rooms with pagination', function(done) {
+      v1.apps.rooms.all({
+        app_id: 1,
+        per_page: 5,
+        page: 4
+      }, function() {
+        var call = clientSpy.getCall(0) || {};
+        var args = call.args[0];
+
+        assert.equal(args.method, 'GET');
+        assert.equal(args.url, v1.client.endpoint + '/apps/1/rooms');
+        assert.deepEqual(args.qs, {
+          per_page: 5,
+          page: 4
+        });
 
         done();
       });

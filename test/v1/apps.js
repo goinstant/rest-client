@@ -1,7 +1,7 @@
 /*jshint node:true*/
 'use strict';
 
-var assert = require('gi-assert');
+var assert = require('goinstant-assert');
 var sinon = require('sinon');
 
 var requestStub = require('../lib/request-stub');
@@ -48,6 +48,42 @@ describe('Apps v1', function() {
     });
   });
   describe('all', function() {
+    it('is a GET to /apps with pagination', function(done) {
+      v1.apps.all({
+        per_page: 4,
+        page: 2
+      }, function() {
+        var call = clientSpy.getCall(0);
+        var args = call.args[0];
+
+        assert.equal(args.method, 'GET');
+        assert.equal(args.url, v1.client.endpoint + '/apps');
+        assert.deepEqual(args.qs, {
+          per_page: 4,
+          page: 2
+        });
+
+        done();
+      });
+    });
+    it('is a GET to /apps with pagination (legacy naming)', function(done) {
+      v1.apps.all({
+        pageSize: 4,
+        pageNumber: 2
+      }, function() {
+        var call = clientSpy.getCall(0);
+        var args = call.args[0];
+
+        assert.equal(args.method, 'GET');
+        assert.equal(args.url, v1.client.endpoint + '/apps');
+        assert.deepEqual(args.qs, {
+          per_page: 4,
+          page: 2
+        });
+
+        done();
+      });
+    });
     it('is a GET to /apps', function(done) {
       v1.apps.all(function() {
         var call = clientSpy.getCall(0);

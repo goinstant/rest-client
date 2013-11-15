@@ -1,7 +1,7 @@
 /*jshint node:true*/
 'use strict';
 
-var assert = require('gi-assert');
+var assert = require('goinstant-assert');
 var sinon = require('sinon');
 var nock = require('nock');
 
