@@ -62,3 +62,5 @@ Credentials can be generated through your GoInstant dashboard via [https://goins
   - [get](docs/keys.md#get)
   - [update](docs/keys.md#update)
   - [remove](docs/keys.md#remove)
+- [Channels](docs/channels.md#channels)
+  - [message](docs/channels.md#message)
