@@ -77,6 +77,42 @@ describe('Rooms v1', function() {
       }, 'Parameter id must be an integer');
     });
   });
+  describe('create', function() {
+    it('is a POST to /apps/:id/rooms', function(done) {
+      v1.apps.rooms.create({
+        app_id: 1,
+        room_name: 'test-room-name'
+      }, function() {
+        var call = clientSpy.getCall(0) || {};
+        var args = call.args[0];
+
+        assert.equal(args.method, 'POST');
+        assert.equal(args.url, v1.client.endpoint + '/apps/1/rooms');
+
+        done();
+      });
+    });
+    it('errors with invalid params', function() {
+      assert.exception(function() {
+        return v1.apps.rooms.create({ app_id: 1, room_name: 'test' });
+      }, 'Callback must be supplied')
+    });
+    it('errors with invalid params', function() {
+      assert.exception(function() {
+        return v1.apps.rooms.create({ room_name: 'test'}, function() {});
+      }, 'Opts property app_id must be an integer or string');
+    });
+    it('errors with invalid params', function() {
+      assert.exception(function() {
+        return v1.apps.rooms.create(false, function() {});
+      }, 'Parameter opts must be an object');
+    });
+    it('errors with invalid params', function() {
+      assert.exception(function() {
+        return v1.apps.rooms.create({ app_id: 1 }, function() {});
+      }, 'Opts property room_name must be a string')
+    });
+  });
   describe('all', function() {
     it('is a GET to /apps/:id/rooms', function(done) {
       v1.apps.rooms.all({
