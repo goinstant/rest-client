@@ -132,6 +132,7 @@ describe('Keys v1', function() {
         room_id: 22,
         key: 'mykey',
         value: 'whocares',
+        create_room: true,
         options: {
           expiry: 3000, cascade: 'haha/this/key/is/not/real'
         }
@@ -151,6 +152,7 @@ describe('Keys v1', function() {
             }
           }
         ));
+        assert.deepEqual(args.qs, { create_room: true });
 
         done();
       });

@@ -34,6 +34,7 @@ Update the value of a key
  * @param {options.room_id} id of the room
  * @param {options.key} string the key name
  * @param {options.value} value of the key
+ * @param {options.create_room} if true creates specified room if it doesn't exist (Optional)
  * @param {options.options} https://developers.goinstant.com/v1/javascript_api/key/set.html
  */
 
@@ -42,6 +43,7 @@ var opts = {
   room_id: 3,
   key: 'mykey',
   value: 'myval',
+  create_room: true,
   options: {
     cascade: 'otherkey', expire: 10000
   }
