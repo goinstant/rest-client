@@ -1,5 +1,9 @@
 # GoInstant Rest Client Changelog
 
+### v1.2.1
+
+- Add keys#update create_room flag to auto-create the room if not exists
+
 ### v1.2.0
 
 - Added rooms#create
