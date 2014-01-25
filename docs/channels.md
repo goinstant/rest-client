@@ -20,10 +20,7 @@ var opts = {
   app_id: 1,
   room_id: 3,
   channel: 'mychannel',
-  value: 'myval',
-  options: {
-    cascade: 'otherkey', expire: 10000
-  }
+  value: 'myval'
 };
 
 client.channels.message(opts, function(err, value) { });

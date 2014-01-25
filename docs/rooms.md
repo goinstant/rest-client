@@ -25,41 +25,12 @@ client.apps.rooms.all({
   {
     "id": 1,
     "app_id": 2,
-    "name": "Sample Room",
+    "name": "my-room",
     "created_at": "1979-01-01 00:00:01-00",
     "destroyed_at": "1979-01-01 00:10:01-00",
     "users": 4
   }
 ]
-```
-
-### #create
-
-Create a single room with a specified name.
-
-```js
-/**
- * @param {options} object
- * @param {options.app_id} id of the app
- * @param {options.room_name} name for the room
- * @param {function} callback
- */
-
-client.apps.rooms.get(1, {
-  app_id: 2,
-  room_name: 'my-room-name'
-}, function(err, rooms, res) { });
-```
-
-```json
-{
-  "id": 2,
-  "app_id": 2,
-  "name": "my-room-name",
-  "created_at": "1979-01-01 00:00:01-00",
-  "destroyed_at": null,
-  "users": 0
-}
 ```
 
 ### #get
@@ -83,10 +54,39 @@ client.apps.rooms.get(1, {
 {
   "id": 1,
   "app_id": 2,
-  "name": "Sample Room",
+  "name": "my-room",
   "created_at": "1979-01-01 00:00:01-00",
   "destroyed_at": "1979-01-01 00:10:01-00",
   "users": 4
+}
+```
+
+### #create
+
+Create a single room with a specified name.
+
+```js
+/**
+ * @param {options} object
+ * @param {options.app_id} id of the app
+ * @param {options.room_name} name for the room
+ * @param {function} callback
+ */
+
+client.apps.rooms.create({
+  app_id: 2,
+  room_name: 'my-room-name'
+}, function(err, rooms, res) { });
+```
+
+```json
+{
+  "id": 2,
+  "app_id": 2,
+  "name": "my-room-name",
+  "created_at": "1979-01-01 00:00:01-00",
+  "destroyed_at": null,
+  "users": 0
 }
 ```
 
