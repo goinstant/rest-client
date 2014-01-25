@@ -57,6 +57,7 @@ Credentials can be generated through your GoInstant dashboard via [https://goins
 - [Rooms](docs/rooms.md#rooms)
   - [all](docs/rooms.md#all)
   - [get](docs/rooms.md#get)
+  - [create](docs/rooms.md#create)
   - [users](docs/rooms.md#users)
 - [Keys](docs/keys.md#keys)
   - [get](docs/keys.md#get)
