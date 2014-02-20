@@ -1,5 +1,9 @@
 # GoInstant Rest Client Changelog
 
+### v1.2.2
+
+- Add apps.loginSettings routes for GoInstant Login
+
 ### v1.2.1
 
 - Add keys#update create_room flag to auto-create the room if not exists
