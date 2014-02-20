@@ -2,12 +2,11 @@
 
 # apps
 
-[apps](https://apps.goinstant.com/v1/rest-client/apps) (apps) are user accounts that can manage applications and settings for your account.
+[Apps](https://developers.goinstant.com/v1/rest-api/apps.html) are your GoInstant Applications.
 
 ### #all
 
 Get all apps
-
 
 **Accepted options:** sort, direction, pageSize, pageNumber
 
