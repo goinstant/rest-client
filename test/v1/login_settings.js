@@ -99,7 +99,7 @@ describe('App Login Settings v1', function() {
   });
 
   describe('set', function() {
-    updateOrSetTests('set', 'POST');
+    updateOrSetTests('set', 'PUT');
   });
 
 });
