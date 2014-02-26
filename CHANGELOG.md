@@ -1,8 +1,13 @@
 # GoInstant Rest Client Changelog
 
+### v1.2.3
+
+- Fixes to apps.loginSettings
+
 ### v1.2.2
 
 - Add apps.loginSettings routes for GoInstant Login
+- Documentation fixes
 
 ### v1.2.1
 
