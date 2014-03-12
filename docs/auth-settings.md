@@ -1,10 +1,10 @@
 [Back to Table of Contents](/#client)
 
-# loginSettings
+# authSettings
 
-[Login Settings](https://developers.goinstant.com/v1/rest-api/login-settings.html)
-control how your applications integrate with
-[GoInstant Login](https://developers.goinstant.com/v1/security_and_auth/guides/login.md).
+[Auth Settings](https://developers.goinstant.com/v1/rest-api/auth-settings.html)
+controls how your applications integrate with
+the [GoInstant Authentication API](https://developers.goinstant.com/v1/security_and_auth/guides/auth_api.md).
 
 - [get](#get) retrieves settings
 - [update](#update) patches a sub-set of your settings
@@ -20,7 +20,7 @@ Get the Login settings for a particular App.
  * @param {function} callback
  */
 
-client.apps.loginSettings.get(myAppId, function(err, settings, res) {
+client.apps.authSettings.get(myAppId, function(err, settings, res) {
 });
 ```
 
@@ -57,7 +57,7 @@ var changes = {
   twitter: null // remove Twitter settings
 };
 
-client.apps.loginSettings.update(myAppId, changes, function(err, settings, res) {
+client.apps.authSettings.update(myAppId, changes, function(err, settings, res) {
 });
 ```
 
@@ -97,7 +97,7 @@ var newSettings = {
   }
 };
 
-client.apps.loginSettings.set(myAppId, newSettings, function(err, settings, res) {
+client.apps.authSettings.set(myAppId, newSettings, function(err, settings, res) {
 });
 ```
 
