@@ -1,5 +1,9 @@
 # GoInstant Rest Client Changelog
 
+### v1.2.4
+
+- apps.loginSettings renamed to apps.authSettings
+
 ### v1.2.3
 
 - Fixes to apps.loginSettings
