@@ -261,4 +261,34 @@ describe('API Client', function() {
       });
     });
   });
+  describe('when a response is valid', function() {
+    var client;
+
+    before(function() {
+      client = new Client({
+        client_id: 'fake client_id',
+        client_secret: 'fake client_secret',
+        access_token: 'fake access_token'
+      });
+
+      nock('https://api.goinstant.net')
+        .get('/v1/devs')
+        .reply(200, [
+          { id: 1 },
+          { id: 2 }
+        ]);
+    });
+    it('passes the body and full response to the client', function(done) {
+      client.req({
+        method: 'GET',
+        url: '/devs'
+      }, function(err, devs, res) {
+        assert.ok(Array.isArray(devs));
+        assert.equal(res.statusCode, 200);
+        assert.ok(typeof res.headers === 'object');
+
+        done();
+      });
+    });
+  });
 });

@@ -1,5 +1,9 @@
 # GoInstant Rest Client Changelog
 
+### v1.2.5
+
+- Pass response object to the client
+
 ### v1.2.4
 
 - apps.loginSettings renamed to apps.authSettings
