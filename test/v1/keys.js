@@ -1,4 +1,4 @@
-/* jshint node: true */
+/*jshint node:true*/
 'use strict';
 
 var assert = require('goinstant-assert');
@@ -18,179 +18,213 @@ describe('Keys v1', function() {
       client_secret: 'fake client_secret',
       access_token: 'fake access_token'
     });
-    clientSpy = sinon.spy(v1.client, '_performRequest');
+    clientSpy = sinon.spy(v1, '_req');
   });
   afterEach(function() {
-    v1.client._performRequest.restore();
+    v1._req.restore();
   });
 
-  describe('get', function() {
-    describe('errors', function() {
-      it('when no callback is supplied', function() {
-        assert.exception(function() {
-          return v1.keys.get({
-
-          }, 'haha im not a function');
-        }, 'Callback must be supplied');
-      });
-
-      it('when no options are supplied', function() {
-        assert.exception(function() {
-          return v1.keys.get(null, function() {});
-        }, 'Parameter opts must be an object');
-      });
-
-      it('when no app is supplied', function() {
-        assert.exception(function() {
-          return v1.keys.get({room_id: 'yes'}, function() {});
-        }, 'Opts property app_id must be a string or integer');
-      });
-
-      it('when no room is supplied', function() {
-        assert.exception(function() {
-          return v1.keys.get({app_id: 'haha' }, function() {});
-        }, 'Opts property room_id must be a string or integer');
-      });
-      it('when no key is supplied', function() {
-        assert.exception(function() {
-          return v1.keys.get({app_id: 'haha', room_id: 'hehe'}, function() {});
-        }, 'Opts property key must be a string or integer');
-      });
+  describe('validation', function() {
+    it('errors with invalid opts - no key path', function() {
+      assert.exception(function() {
+        return v1.keys();
+      }, 'Key path must be supplied');
     });
-
+    it('errors with invalid opts - no opts', function() {
+      assert.exception(function() {
+        return v1.keys('/my-key/path');
+      }, 'Parameter opts must be an object');
+    });
+    it('errors with invalid opts - no room', function() {
+      assert.exception(function() {
+        return v1.keys('/my-key/path', {
+          app_id: 1
+        });
+      }, 'Room name or id must be supplied');
+    });
+    it('errors with invalid opts - no app', function() {
+      assert.exception(function() {
+        return v1.keys('/my-key/path', {
+          room_id: 1
+        });
+      }, 'App name or id must be supplied');
+    });
+    it('errors with invalid opts - mixed lookup, needs room_id', function() {
+      assert.exception(function() {
+        return v1.keys('/my-key/path', {
+          app_id: 12345,
+          room_name: 'my-room-name'
+        });
+      }, 'Cannot mix types, Room id must be supplied');
+    });
+    it('errors with invalid opts - mixed lookup, needs room_name', function() {
+      assert.exception(function() {
+        return v1.keys('/my-key/path', {
+          app_name: 'my-app-name',
+          room_id: 1234
+        });
+      }, 'Cannot mix types, Room name must be supplied');
+    });
+  });
+  describe('get', function() {
     it('is a GET to /keys/:app/:room/:key', function(done) {
-      var opts = {
-        app_id: 23,
-        room_id: 22,
-        key: 'mykey'
-      };
-
-      v1.keys.get(opts, function() {
+      v1.keys('/my/key', {
+        app_name: 'my-app',
+        room_name: 'my-room'
+      }).get(function() {
         var call = clientSpy.getCall(0);
         var args = call.args[0];
-
+      
         assert.equal(args.method, 'GET');
-        assert.equal(args.url, v1.client.endpoint + '/keys/23/22/mykey');
+        assert.equal(args.url, v1.endpoint + '/keys/my-app/my-room/my/key');
 
         done();
       });
     });
-  });
+    it('is a GET to /keys/:app/:room/:key - root key', function(done) {
+      v1.keys('/', {
+        app_name: 'my-app',
+        room_name: 'my-room'
+      }).get(function() {
+        var call = clientSpy.getCall(0);
+        var args = call.args[0];
+      
+        assert.equal(args.method, 'GET');
+        assert.equal(args.url, v1.endpoint + '/keys/my-app/my-room/');
 
+        done();
+      });
+    });
+    it('errors with invalid params - no callback', function() {
+      assert.exception(function() {
+        return v1.keys('/my-key', {
+          app_name: 'my-app',
+          room_name: 'my-room'
+        }).get();
+      }, 'Callback is required for get');
+    });
+    it('errors with invalid params - bad opts', function() {
+      assert.exception(function() {
+        return v1.keys('/my-key', {
+          app_name: 'my-app',
+          room_name: 'my-room'
+        }).get(undefined, function() {});
+      }, 'Invalid options supplied to get');
+    });
+  });
+  describe('update', function() {
+    it('is a PUT to /keys/:app/:room/:key', function(done) {
+      v1.keys('/my/key', {
+        app_name: 'my-app',
+        room_name: 'my-room'
+      }).update({
+        value: {
+          data: 'here'
+        }
+      }, function() {
+        var call = clientSpy.getCall(0);
+        var args = call.args[0];
+      
+        assert.equal(args.method, 'PUT');
+        assert.equal(args.url, v1.endpoint + '/keys/my-app/my-room/my/key');
+        assert.deepEqual(args.body, {
+          options: {},
+          value: {
+            data: 'here'
+          }
+        });
+
+        done();
+      });
+    });
+    it('is a PUT to /keys/:app/:room/:key - root key', function(done) {
+      v1.keys('/', {
+        app_name: 'my-app',
+        room_name: 'my-room'
+      }).update({
+        value: {
+          data: 'here'
+        }
+      }, function() {
+        var call = clientSpy.getCall(0);
+        var args = call.args[0];
+      
+        assert.equal(args.method, 'PUT');
+        assert.equal(args.url, v1.endpoint + '/keys/my-app/my-room/');
+        assert.deepEqual(args.body, {
+          options: {},
+          value: {
+            data: 'here'
+          }
+        });
+
+        done();
+      });
+    });
+    it('errors with invalid params - no value', function() {
+      assert.exception(function() {
+        return v1.keys('/my-key', {
+          app_name: 'my-app',
+          room_name: 'my-room'
+        }).update({
+          options: {
+          }
+        }, function() {});
+      }, 'Value is required for update');
+    });
+    it('errors with invalid params - no opts', function() {
+      assert.exception(function() {
+        return v1.keys('/my-key', {
+          app_name: 'my-app',
+          room_name: 'my-room'
+        }).update({}, function() {});
+      }, 'Invalid options supplied to update');
+    });
+  });
   describe('remove', function() {
     it('is a DELETE to /keys/:app/:room/:key', function(done) {
-      var opts = {
-        app_id: 23,
-        room_id: 22,
-        key: 'mykey'
-      };
-
-      v1.keys.remove(opts, function() {
+      v1.keys('/my/key', {
+        app_name: 'my-app',
+        room_name: 'my-room'
+      }).remove(function() {
         var call = clientSpy.getCall(0);
         var args = call.args[0];
-
+      
         assert.equal(args.method, 'DELETE');
-        assert.equal(args.url, v1.client.endpoint + '/keys/23/22/mykey');
+        assert.equal(args.url, v1.endpoint + '/keys/my-app/my-room/my/key');
 
         done();
       });
     });
-  });
+    it('is a DELETE to /keys/:app/:room/:key - root key', function(done) {
+      v1.keys('/', {
+        app_name: 'my-app',
+        room_name: 'my-room'
+      }).remove(function() {
+        var call = clientSpy.getCall(0);
+        var args = call.args[0];
+      
+        assert.equal(args.method, 'DELETE');
+        assert.equal(args.url, v1.endpoint + '/keys/my-app/my-room/');
 
-  describe('update', function() {
-    it('throws if you do not pass a value', function() {
+        done();
+      });
+    });
+    it('errors with invalid params - no callback', function() {
       assert.exception(function() {
-        return v1.keys.update({app_id: 22, room_id: 23, key: 'meow'},
-          function() {}
-        );
-      }, 'Options[value] must be provided');
+        return v1.keys('/my-key', {
+          app_name: 'my-app',
+          room_name: 'my-room'
+        }).remove();
+      }, 'Callback is required for remove');
     });
-
-    it('allows optional options', function(done) {
-      var opts = {
-        app_id: 23,
-        room_id: 22,
-        key: 'mykey',
-        value: 'whocares'
-      };
-
-      v1.keys.update(opts, function() {
-        var call = clientSpy.getCall(0);
-        var args = call.args[0];
-
-        assert.equal(args.method, 'PUT');
-        assert.equal(args.url, v1.client.endpoint + '/keys/23/22/mykey');
-        assert.equal(args.body, JSON.stringify({value: 'whocares'}));
-
-        done();
-      });
+    it('errors with invalid params - bad opts', function() {
+      assert.exception(function() {
+        return v1.keys('/my-key', {
+          app_name: 'my-app',
+          room_name: 'my-room'
+        }).remove(undefined, function() {});
+      }, 'Invalid options supplied to remove');
     });
-
-    it('is a PUT to /keys/:app/:room/:key', function(done) {
-      var opts = {
-        app_id: 23,
-        room_id: 22,
-        key: 'mykey',
-        value: 'whocares',
-        create_room: true,
-        options: {
-          expiry: 3000, cascade: 'haha/this/key/is/not/real'
-        }
-      };
-
-      v1.keys.update(opts, function() {
-        var call = clientSpy.getCall(0);
-        var args = call.args[0];
-
-        assert.equal(args.method, 'PUT');
-        assert.equal(args.url, v1.client.endpoint + '/keys/23/22/mykey');
-        assert.equal(args.body,
-          JSON.stringify({
-            value: 'whocares',
-            options: {
-              expiry: 3000, cascade: 'haha/this/key/is/not/real'
-            }
-          }
-        ));
-        assert.deepEqual(args.qs, { create_room: true });
-
-        done();
-      });
-    });
-  });
-  describe('accepts strings', function() {
-    function test(cmd) {
-      it(cmd + ' can still request fine', function(done) {
-        var opts = {
-          app_id: 'appy',
-          room_id: 'myroom',
-          key: 'mykey'
-        };
-
-        if (cmd === 'update') {
-          opts.value = 'whocares';
-        }
-
-        v1.keys[cmd](opts, function() {
-          var call = clientSpy.getCall(0) || {};
-          var args = call.args[0];
-
-          var dict = {
-            'get': 'GET',
-            'remove': 'DELETE',
-            'update': 'PUT'
-          };
-
-          assert.equal(args.method, dict[cmd]);
-          assert.equal(args.url, v1.client.endpoint + '/keys/appy/myroom/mykey');
-
-          done();
-        });
-      });
-    }
-
-    test('get');
-    test('update');
-    test('remove');
   });
 });

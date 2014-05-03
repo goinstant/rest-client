@@ -4,119 +4,52 @@
 
 [Apps](https://developers.goinstant.com/v1/rest-api/apps.html) are your GoInstant Applications.
 
-### #all
+## Parameters
 
-Get all apps
+An application must be identified by its ID.
 
-**Accepted options:** sort, direction, pageSize, pageNumber
+## Methods
 
-```js
-/**
- * @param {object} opts
- * @param {function} callback
- */
+### get
 
-// Options object is optional
-client.apps.all(function(err, apps, res) { });
-
-// Sort options
-client.apps.all({
-  sort: 'name',
-  direction: 'desc'
-}, function(err, apps, res) { });
-```
-
-```json
-[
-  {
-    "id": 1,
-    "account_id": 1,
-    "name": "My First Application"
-    "created": "1979-01-01 00:00:01-00"
-  }
-]
-```
-
-### #get
-
-Get a single app by its ID
+Retrieve an application.
 
 ```js
-/**
- * @param {integer} id
- * @param {function} callback
- */
-
-client.apps.get(1, function(err, app, res) { });
+client.apps(:id).get(callback(err, body, response))
 ```
 
-```json
-{
-  "id": 1,
-  "account_id": 1,
-  "name": "My First Application",
-  "created": "1979-01-01 00:00:01-00"
-}
-```
-
-### #create
-
-Create a new app
+Retrieve all applications.
 
 ```js
-/**
- * @param {object} app
- * @param {function} callback
- */
-
-client.apps.create({
-  name: "My First Application"
-}, function(err, app, res) { });
+client.apps().get([options,] callback(err, body, response))
 ```
 
-```json
-{
-  "id": 1,
-  "account_id": 1,
-  "name": "My First Application",
-  "created": "1979-01-01 00:00:01-00"
-}
-```
+Options: sort, direction, pageSize, pageNumber
 
-### #update
+### create
 
-Update a single app by their ID
+Create an application.
 
 ```js
-/**
- * @param {integer} id
- * @param {function} callback
- */
-
-client.apps.update(id, {
-  name: 'Hello World',
-}, function(err, app, res) { });
+client.apps().create(options, callback(err, body, response))
 ```
 
-```json
-{
-  "id": 1,
-  "account_id": 1,
-  "name": "Hello World",
-  "created": "1979-01-01 00:00:01-00"
-}
-```
+Options: name, acl
 
-### #remove
+### update
 
-Remove a single app by its ID
+Update an application.
 
 ```js
-/**
- * @param {integer} id
- * @param {function} callback
- */
+client.apps(:id).update(options, callback(err, body, response))
+```
 
-client.apps.remove(id, function(err, res) { });
+Options: name, acl
 
+### remove
+
+Remove an application.
+
+```js
+client.apps(:id).remove(callback(err, body, response))
 ```

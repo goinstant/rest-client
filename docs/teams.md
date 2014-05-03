@@ -2,277 +2,92 @@
 
 # teams
 
-[teams](https://teams.goinstant.com/v1/rest-client/teams) are groups for developers with a specific set of permissions.
+[Teams](https://teams.goinstant.com/v1/rest-client/teams) are groups for developers with a specific set of permissions.
 
-### #all
+## Parameters
 
-Get all teams
+A team must be identified by its ID.
 
+## Methods
 
-**Accepted options:** sort, direction, pageSize, pageNumber
+### get
 
-```js
-/**
- * @param {object} opts
- * @param {function} callback
- */
-
-// Options object is optional
-client.teams.all(function(err, teams, res) { });
-
-// Sort options
-client.teams.all({
-  sort: 'name',
-  direction: 'desc'
-}, function(err, teams, res) { });
-```
-
-```json
-[
-  {
-    "id": 1,
-    "account_id": 1,
-    "name": "My First Application"
-    "created": "1979-01-01 00:00:01-00"
-  }
-]
-```
-
-
-### #get
-
-Get a single app by its ID
+Retrieve a single team.
 
 ```js
-/**
- * @param {integer} id
- * @param {function} callback
- */
-
-client.teams.get(1, function(err, team, res) { });
+client.teams().get(callback(err, body, response))
 ```
 
-```json
-{
-  "id": 1,
-  "account_id": 1,
-  "name": "My First Application",
-  "created": "1979-01-01 00:00:01-00"
-}
-```
-
-### #create
-
-Create a new team. Full permissions schema available in the [Teams documentation](https://developers.goinstant.com/v1/rest-client/teams).
+Retrieve all teams.
 
 ```js
-/**
- * @param {object} team
- * @param {function} callback
- */
-
-client.teams.create({
-  name: "Applications",
-  description: "This team can only manage applications",
-  permissions: {
-    apps: {
-      read: true,
-      write: true,
-      del: true
-    }
-  }
-}, function(err, team, res) { });
+client.teams(:id).get(options, callback(err, body, response))
 ```
 
-```json
-{
-  "id": 1,
-  "name": "Applications",
-  "description": "This team can only manage applications",
-  "permissions": {
-    "apps": {
-      "read": true,
-      "write": true,
-      "del": true
-    },
-    "devs": {
-      "read": false,
-      "write": false,
-      "del": false
-    },
-    "rooms": {
-      "read": false,
-      "write": false,
-      "del": false
-    },
-    "settings": {
-      "read": false,
-      "write": false,
-      "del": false
-    },
-    "teams": {
-      "read": false,
-      "write": false,
-      "del": false
-    },
-    "tokens": {
-      "read": false,
-      "write": false,
-      "del": false
-    }
-  }
-}
-```
+Options: sort, direction, pageSize, pageNumber
 
-### #update
+### create
 
-Update a single app by their ID
+Create a new team.
 
 ```js
-/**
- * @param {integer} id
- * @param {function} callback
- */
-
-client.teams.update(id, {
-  name: "Applications and Devs",
-  description: "This team can manage both Apps and Devs"
-  permissions: {
-    apps: {
-      read: true,
-      write: true,
-      del: true
-    },
-    devs: {
-      read: true,
-      write: true,
-      del: true
-    },
-    rooms: {
-      read: false,
-      write: false,
-      del: false
-    },
-    settings: {
-      read: false,
-      write: false,
-      del: false
-    },
-    teams: {
-      read: false,
-      write: false,
-      del: false
-    },
-    tokens: {
-      read: false,
-      write: false,
-      del: false
-    }
-  }
-}, function(err, team, res) { });
+client.teams().create(params, callback(err, body, response))
 ```
 
-```json
-{
-  "id": 1,
-  "name": "Applications and Devs",
-  "description": "This team can manage both Apps and Devs",
-  "permissions": {
-    "apps": {
-      "read": true,
-      "write": true,
-      "del": true
-    },
-    "devs": {
-      "read": true,
-      "write": true,
-      "del": true
-    },
-    "rooms": {
-      "read": false,
-      "write": false,
-      "del": false
-    },
-    "settings": {
-      "read": false,
-      "write": false,
-      "del": false
-    },
-    "teams": {
-      "read": false,
-      "write": false,
-      "del": false
-    },
-    "tokens": {
-      "read": false,
-      "write": false,
-      "del": false
-    }
-  }
-}
-```
+Params: name, description, permissions
 
-### #remove
+### update
 
-Remove a single team by its ID
+Update a team.
 
 ```js
-/**
- * @param {integer} id
- * @param {function} callback
- */
-
-client.teams.remove(id, function(err, res) { });
+client.teams(:id).create(options, callback(err, body, response))
 ```
 
-### Developers
+Options: name, description, permissions
 
-Manage the developers who are a part of each team.
+### remove
 
-#### #all
-
-List developers who are a member of a particular team
-
+Remove a team.
 
 ```js
-/**
- * @param {integer} id
- * @param {function} callback
- */
-
-client.teams.devs.all(1, function(err, devs, res) { });
+client.teams(:id).remove(callback(err, body, response))
 ```
 
-#### #add
+# developers
 
-Add a developer to a specific team by their ID
+Developers are members of teams.
 
+## Parameters
+
+A team must be identified by its ID.
+
+A developer must be identified by its ID.
+
+## Methods
+
+### get
+
+Retrieve a list of team members.
 
 ```js
-/**
- * @param {integer} id
- * @param {object} opts
- * @param {function} callback
- */
-
-client.teams.devs.add(1, {
-  developer_id: 2
-}, function(err, team, res) { });
+client.teams(:id).devs().get(callback(err, body, response))
 ```
 
-### #remove
+### add
 
-Remove a developer from a specific team by their ID
-
+Add a developer to a team.
 
 ```js
-/**
- * @param {integer} id
- * @param {object} opts
- * @param {function} callback
- */
+client.teams(:id).devs().add(params, callback(err, body, response))
+```
 
-client.teams.devs.remove(1, {
-  developer_id: 2
-}, function(err, team, res) { });
+Params: developer
+
+### remove
+
+Remove a developer from a team.
+
+```js
+client.teams(:id).devs(:id).remove(callback(err, body, response))
 ```

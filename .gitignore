@@ -8,6 +8,9 @@ lib-cov
 *.gz
 *.sw?
 *.js~
+*.LOCAL.*.js
+*.REMOTE.*.js
+*.orig
 
 pids
 logs
