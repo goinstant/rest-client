@@ -2,73 +2,38 @@
 
 # keys
 
-### #get
+[Keys](https://developers.goinstant.com/v1/rest-api/keys.html) are the data stored in your application within GoInstant.
 
-Get the value of a single key
+## Parameters
+
+An application may be identified by its ID or its name (app_id, app_name).
+
+A room must be identified with the same identifier type as the application specified (room_id, room_name).
+
+## Methods
+
+### get
+
+Get a key's value.
 
 ```js
-/**
- * @param {options} object
- * @param {options.app_id} id of the app
- * @param {options.room_id} id of the room
- * @param {options.key} string the key name
- */
-
-var opts = {
-  app_id: 1,
-  room_id: 3,
-  key: 'mykey'
-};
-
-client.keys.get(opts, function(err, value) { });
+client.keys(:key, params).get(callback(err, body, response))
 ```
 
-### #update
+### update
 
-Update the value of a key
+Update a key's value.
 
 ```js
-/**
- * @param {options} object
- * @param {options.app_id} id of the app
- * @param {options.room_id} id of the room
- * @param {options.key} string the key name
- * @param {options.value} value of the key
- * @param {options.create_room} if true creates specified room if it doesn't exist (Optional)
- * @param {options.options} https://developers.goinstant.com/v1/javascript_api/key/set.html
- */
-
-var opts = {
-  app_id: 1,
-  room_id: 3,
-  key: 'mykey',
-  value: 'myval',
-  create_room: true,
-  options: {
-    cascade: 'otherkey', expire: 10000
-  }
-};
-
-client.keys.update(opts, function(err, value) { });
+client.keys(:key, params).update(value, callback(err, body, response))
 ```
 
-### #remove
+Params: app (app_id, app_name), room (room_id, room_name)
 
-Remove the value of a key
+### remove
+
+Remove a key.
 
 ```js
-/**
- * @param {options} object
- * @param {options.app_id} id of the app
- * @param {options.room_id} id of the room
- * @param {options.key} string the key name
- */
-
-var opts = {
-  app_id: 1,
-  room_id: 3,
-  key: 'mykey',
-};
-
-client.keys.remove(opts, function(err, value) { });
+client.keys(:key, params).remove(callback(err, body, response))
 ```

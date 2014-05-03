@@ -4,135 +4,52 @@
 
 [Developers](https://developers.goinstant.com/v1/rest-client/devs) (Devs) are user accounts that can manage applications and settings for your account.
 
-### #all
+## Parameters
 
-Get all developers
+A developer must be identified by their ID.
 
+## Methods
 
-**Accepted options:** sort, direction, pageSize, pageNumber
+### get
 
-```js
-/**
- * @param {object} opts
- * @param {function} callback
- */
-
-// Options object is optional
-client.devs.all(function(err, developers, res) { });
-
-// Sort options
-client.devs.all({
-  sort: 'display_name',
-  direction: 'desc'
-}, function(err, developers, res) { });
-```
-
-```json
-[
-  {
-    "id": 1,
-    "account_id": 1,
-    "email": "johnsmith@email.com",
-    "first_name": "John",
-    "last_name": "Smith",
-    "display_name": "John Smith",
-    "created": "1979-01-01 00:00:01-00"
-  }
-]
-```
-
-
-### #get
-
-Get a single developer by their ID
+Retrieve a developer.
 
 ```js
-/**
- * @param {integer} id
- * @param {function} callback
- */
-
-client.devs.get(1, function(err, developer, res) { });
+client.devs(:id).get(callback(err, body, response))
 ```
 
-```json
-{
-  "id": 1,
-  "account_id": 1,
-  "email": "johnsmith@email.com",
-  "first_name": "John",
-  "last_name": "Smith",
-  "display_name": "John Smith",
-  "created": "1979-01-01 00:00:01-00"
-}
-```
-
-### #create
-
-Create a new developer
+Retrieve all developers.
 
 ```js
-/**
- * @param {object} developer
- * @param {function} callback
- */
-
-client.devs.create({
-  email: 'johnsmith@email.com',
-  password: 'TheirP@55wordHere',
-  first_name: 'John',
-  last_name: 'Smith'
-}, function(err, developer, res) { });
+client.devs().get([options,] callback(err, body, response))
 ```
 
-```json
-{
-  "id": 1,
-  "account_id": 1,
-  "email": "johnsmith@email.com",
-  "first_name": "John",
-  "last_name": "Smith",
-  "display_name": "John Smith",
-  "created": "1979-01-01 00:00:01-00"
-}
-```
+Options: sort, direction, pageSize, pageNumber
 
-### #update
+### update
 
-Update a single developer by their ID
+Update a single developer.
 
 ```js
-/**
- * @param {integer} id
- * @param {function} callback
- */
-
-client.devs.update(id, {
-  display_name: 'Jack Frost',
-}, function(err, developer, res) { });
+client.devs(:id).update(options, callback(err, body, response))
 ```
 
-```json
-{
-  "id": 1,
-  "account_id": 1,
-  "email": "johnsmith@email.com",
-  "first_name": "John",
-  "last_name": "Smith",
-  "display_name": "Jack Frost",
-  "created": "1979-01-01 00:00:01-00"
-}
-```
+Options: email, display_name, first_name, last_name
 
-### #remove
+### create
 
-Remove a single developer by their ID
+Create a new developer.
 
 ```js
-/**
- * @param {integer} id
- * @param {function} callback
- */
+client.devs().create(params, callback(err, body, response))
+```
 
-client.devs.remove(id, function(err, res) { });
+Params: email, display_name, first_name, last_name
+
+### remove
+
+Remove a single developer.
+
+```js
+client.devs(:id).remove(callback(err, body, response))
 ```

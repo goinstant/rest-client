@@ -18,107 +18,130 @@ describe('Devs v1', function() {
       client_secret: 'fake client_secret',
       access_token: 'fake access_token'
     });
-    clientSpy = sinon.spy(v1.client, '_performRequest');
+    clientSpy = sinon.spy(v1, '_req');
   });
   afterEach(function() {
-    v1.client._performRequest.restore();
+    v1._req.restore();
   });
 
   describe('get', function() {
     it('is a GET to /devs/:id', function(done) {
-      v1.devs.get(1, function() {
+      v1.devs(1).get(function() {
         var call = clientSpy.getCall(0);
         var args = call.args[0];
       
         assert.equal(args.method, 'GET');
-        assert.equal(args.url, v1.client.endpoint + '/devs/1');
+        assert.equal(args.url, v1.endpoint + '/devs/1');
 
         done();
       });
     });
-    it('errors with invalid params', function() {
+    it('errors with invalid params - no callback', function() {
       assert.exception(function() {
-        return v1.devs.get(1);
-      }, 'Callback must be supplied');
+        return v1.devs(1).get();
+      }, 'Callback is required for get');
     });
-    it('errors with invalid params', function() {
+    it('errors with invalid params - bad query params', function() {
       assert.exception(function() {
-        return v1.devs.get(undefined, function() {});
-      }, 'Parameter id must be an integer');
+        return v1.devs().get(undefined, function() {});
+      }, 'Invalid options supplied to get');
     });
   });
-  describe('all', function() {
-    it('is a GET to /devs with query', function(done) {
-      v1.devs.all({
-        sort: 'display_name',
-        fake: 'value'
-      }, function() {
+  describe('get self', function() {
+    it('is a GET to /devs/self', function(done) {
+      v1.devs('self').get(function() {
         var call = clientSpy.getCall(0);
         var args = call.args[0];
-
+      
         assert.equal(args.method, 'GET');
-        assert.equal(args.url, v1.client.endpoint + '/devs');
+        assert.equal(args.url, v1.endpoint + '/devs/self');
 
         done();
       });
     });
-    it('is a GET to /devs with pagination (legacy naming)', function(done) {
-      v1.devs.all({
-        pageSize: 4,
-        pageNumber: 3
-      }, function() {
-        var call = clientSpy.getCall(0);
-        var args = call.args[0];
-
-        assert.equal(args.method, 'GET');
-        assert.equal(args.url, v1.client.endpoint + '/devs');
-        assert.deepEqual(args.qs, {
-          per_page: 4,
-          page: 3
-        });
-
-        done();
-      });
+    it('errors with invalid params - no callback', function() {
+      assert.exception(function() {
+        return v1.devs(1).get();
+      }, 'Callback is required for get');
     });
+    it('errors with invalid params - bad query params', function() {
+      assert.exception(function() {
+        return v1.devs().get(undefined, function() {});
+      }, 'Invalid options supplied to get');
+    });
+  });
+  describe('get all', function() {
     it('is a GET to /devs with pagination', function(done) {
-      v1.devs.all({
+      v1.devs().get({
         per_page: 4,
-        page: 3
+        page: 2
       }, function() {
         var call = clientSpy.getCall(0);
         var args = call.args[0];
 
         assert.equal(args.method, 'GET');
-        assert.equal(args.url, v1.client.endpoint + '/devs');
+        assert.equal(args.url, v1.endpoint + '/devs');
         assert.deepEqual(args.qs, {
           per_page: 4,
-          page: 3
+          page: 2
         });
 
         done();
       });
     });
     it('is a GET to /devs', function(done) {
-      v1.devs.all(function() {
+      v1.devs().get(function() {
         var call = clientSpy.getCall(0);
         var args = call.args[0];
       
         assert.equal(args.method, 'GET');
-        assert.equal(args.url, v1.client.endpoint + '/devs');
+        assert.equal(args.url, v1.endpoint + '/devs');
 
         done();
       });
     });
-    it('errors with invalid params', function() {
+    it('errors with invalid params - no callback', function() {
       assert.exception(function() {
-        return v1.devs.all(null, function() {});
-      
-      }, 'Parameter opts must be an object');
+        return v1.devs().get();
+      }, 'Callback is required for get');
     });
-    it('errors with invalid params', function() {
+  });
+  describe('create', function() {
+    it('is a POST to /devs with body', function(done) {
+      var opts = {
+        display_name: 'Testing'
+      };
+
+      v1.devs().create(opts, function() {
+        var call = clientSpy.getCall(0);
+        var args = call.args[0];
+
+        assert.equal(args.method, 'POST');
+        assert.equal(args.url, v1.endpoint + '/devs');
+        assert.deepEqual(args.body, opts);
+
+        done();
+      });
+    });
+    it('errors with invalid params - invalid properties', function() {
       assert.exception(function() {
-        return v1.devs.all();
-      }, 'Callback must be supplied');
+        return v1.devs().create('test', function() {});
+      }, 'New properties are required for create');
+    });
+    it('errors with invalid params - no properties', function() {
+      assert.exception(function() {
+        return v1.devs().create({}, function() {});
+      }, 'New properties are required for create');
+    });
+    it('errors with invalid params - id added', function() {
+      assert.exception(function() {
+        return v1.devs(1).create({}, function() {});
+      }, 'Cannot create dev with specific id');
+    });
+    it('errors with invalid params - no callback', function() {
+      assert.exception(function() {
+        return v1.devs().create({ one: 'arg' });
+      }, 'Callback is required for create');
     });
   });
   describe('update', function() {
@@ -127,49 +150,64 @@ describe('Devs v1', function() {
         display_name: 'Testing'
       };
 
-      v1.devs.update(1, opts, function() {
+      v1.devs(1).update(opts, function() {
         var call = clientSpy.getCall(0);
         var args = call.args[0];
       
         assert.equal(args.method, 'PATCH');
-        assert.equal(args.url, v1.client.endpoint + '/devs/1');
-        assert.equal(args.body, JSON.stringify(opts));
+        assert.equal(args.url, v1.endpoint + '/devs/1');
+        assert.deepEqual(args.body, opts);
 
         done();
       });
     });
-    it('errors with invalid params', function() {
+    it('errors with invalid params - invalid properties', function() {
       assert.exception(function() {
-        return v1.devs.update(1, 'test', function() {});
-      }, 'Parameter opts must be an object');
+        return v1.devs(1).update(null, function() {});
+      }, 'New properties are required for update');
     });
-    it('errors with invalid params', function() {
+    it('errors with invalid params - no properties', function() {
       assert.exception(function() {
-        return v1.devs.update(1, { one: 'property' });
-      }, 'Callback must be supplied');
+        return v1.devs(1).update({}, function() {});
+      }, 'New properties are required for update');
+    });
+    it('errors with invalid params - no dev', function() {
+      assert.exception(function() {
+        return v1.devs().update({ name: 'new one' }, function() {});
+      }, 'Dev identity required for update');
+    });
+    it('errors with invalid params - no callback', function() {
+      assert.exception(function() {
+        return v1.devs(1).update({ one: 'arg' });
+      }, 'Callback is required for update');
     });
   });
   describe('remove', function() {
     it('is a DELETE to /devs/:id', function(done) {
-      v1.devs.remove(1, function() {
+      v1.devs(1).remove(function() {
         var call = clientSpy.getCall(0);
         var args = call.args[0];
       
         assert.equal(args.method, 'DELETE');
-        assert.equal(args.url, v1.client.endpoint + '/devs/1');
+        assert.equal(args.url, v1.endpoint + '/devs/1');
 
         done();
       });
     });
-    it('errors with invalid params', function() {
+    it('errors with invalid params - no dev', function() {
       assert.exception(function() {
-        return v1.devs.remove(1);
-      }, 'Callback must be supplied');
+        return v1.devs().remove(function() {});
+      }, 'Dev identity required for remove');
     });
-    it('errors with invalid params', function() {
+    it('errors with invalid params - bad query params', function() {
       assert.exception(function() {
-        return v1.devs.remove(null, function() {});
-      }, 'Parameter id must be an integer');
+        return v1.devs(1).remove(undefined, function() {});
+      }, 'Invalid options supplied to remove');
+    });
+    it('errors with invalid params - no callback', function() {
+      assert.exception(function() {
+        return v1.devs(1).remove();
+      }, 'Callback is required for remove');
     });
   });
 });

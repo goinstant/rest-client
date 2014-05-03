@@ -18,159 +18,143 @@ describe('Rooms v1', function() {
       client_secret: 'fake client_secret',
       access_token: 'fake access_token'
     });
-    clientSpy = sinon.spy(v1.client, '_performRequest');
+    clientSpy = sinon.spy(v1, '_req');
   });
   afterEach(function() {
-    v1.client._performRequest.restore();
+    v1._req.restore();
   });
 
-  describe('users', function() {
-    it('is a GET to /apps/:id/rooms/:room_id/users', function(done) {
-      v1.apps.rooms.users(2, {
-        app_id: 1
-      }, function() {
-        var call = clientSpy.getCall(0) || {};
-        if (!call.args) {
-          throw new Error('Call was not made.')
-        }
-        var args = call.args[0];
-
-        assert.equal(args.method, 'GET');
-        assert.equal(args.url, v1.client.endpoint + '/apps/1/rooms/2/users');
-
-        done();
-      });
-    });
-    it('errors with invalid params', function() {
-      assert.exception(function() {
-        return v1.apps.rooms.users(1, { app_id: 1 });
-      }, 'Callback must be supplied');
-    });
-    it('errors with invalid params', function() {
-      assert.exception(function() {
-        return v1.apps.rooms.get(undefined, {}, function() {});
-      }, 'Parameter id must be an integer');
-    });
-  });
   describe('get', function() {
-    it('is a GET to /apps/:id/rooms/:room_id', function(done) {
-      v1.apps.rooms.get(2, {
-        app_id: 1
-      }, function() {
-        var call = clientSpy.getCall(0) || {};
+    it('is a GET to /apps/:app/rooms/:room', function(done) {
+      v1.apps(1).rooms(1).get(function() {
+        var call = clientSpy.getCall(0);
         var args = call.args[0];
-
+      
         assert.equal(args.method, 'GET');
-        assert.equal(args.url, v1.client.endpoint + '/apps/1/rooms/2');
+        assert.equal(args.url, v1.endpoint + '/apps/1/rooms/1');
 
         done();
       });
     });
-    it('errors with invalid params', function() {
+    it('errors with invalid params - no callback', function() {
       assert.exception(function() {
-        return v1.apps.rooms.get(1, { app_id: 1 });
-      }, 'Callback must be supplied')
+        return v1.apps(1).rooms(1).get();
+      }, 'Callback is required for get');
     });
-    it('errors with invalid params', function() {
+    it('errors with invalid params - bad query params', function() {
       assert.exception(function() {
-        return v1.apps.rooms.get(undefined, {}, function() {});
-      }, 'Parameter id must be an integer');
+        return v1.apps(1).rooms(1).get(undefined, function(){});
+      }, 'Invalid options supplied to get');
+    });
+  });
+  describe('get all', function() {
+    it('is a GET to /apps/:app/rooms with pagination', function(done) {
+      v1.apps(1).rooms().get({
+        per_page: 4,
+        page: 2
+      }, function() {
+        var call = clientSpy.getCall(0);
+        var args = call.args[0];
+
+        assert.equal(args.method, 'GET');
+        assert.equal(args.url, v1.endpoint + '/apps/1/rooms');
+        assert.deepEqual(args.qs, {
+          per_page: 4,
+          page: 2
+        });
+
+        done();
+      });
+    });
+    it('is a GET to /apps/:app/rooms', function(done) {
+      v1.apps(1).rooms().get(function() {
+        var call = clientSpy.getCall(0);
+        var args = call.args[0];
+      
+        assert.equal(args.method, 'GET');
+        assert.equal(args.url, v1.endpoint + '/apps/1/rooms');
+
+        done();
+      });
+    });
+    it('errors with invalid params - no callback', function() {
+      assert.exception(function() {
+        return v1.apps(1).rooms(1).get(undefined, function(){});
+      }, 'Invalid options supplied to get');
+    });
+    it('errors with invalid params - no callback', function() {
+      assert.exception(function() {
+        return v1.apps(1).rooms().get();
+      }, 'Callback is required for get');
+    });
+  });
+  describe('users', function() {
+    it('is a GET to /apps/:app/rooms/:room/users with paging', function(done) {
+      v1.apps(1).rooms(1).users().get({
+        page: 2,
+        per_page: 4
+      }, function() {
+        var call = clientSpy.getCall(0);
+        var args = call.args[0];
+
+        assert.equal(args.method, 'GET');
+        assert.equal(args.url, v1.endpoint + '/apps/1/rooms/1/users');
+        assert.deepEqual(args.qs, {
+          per_page: 4,
+          page: 2
+        });
+
+        done();
+      });
+    });
+    it('is a GET to /apps/:app/rooms/:room/users', function(done) {
+      v1.apps(1).rooms(1).users().get(function() {
+        var call = clientSpy.getCall(0);
+        var args = call.args[0];
+      
+        assert.equal(args.method, 'GET');
+        assert.equal(args.url, v1.endpoint + '/apps/1/rooms/1/users');
+
+        done();
+      });
+    });
+    it('errors with invalid params - bad query params', function() {
+      assert.exception(function() {
+        return v1.apps(1).rooms(1).users().get(undefined, function(){});
+      }, 'Invalid options supplied to get');
+    });
+    it('errors with invalid params - no callback', function() {
+      assert.exception(function() {
+        return v1.apps(1).rooms(1).users().get();
+      }, 'Callback is required for get');
     });
   });
   describe('create', function() {
-    it('is a POST to /apps/:id/rooms', function(done) {
-      v1.apps.rooms.create({
-        app_id: 1,
-        room_name: 'test-room-name'
-      }, function() {
-        var call = clientSpy.getCall(0) || {};
+    it('is a POST to /apps/:app/rooms with body', function(done) {
+      var opts = {
+        name: 'testing'
+      };
+
+      v1.apps(1).rooms().create(opts, function() {
+        var call = clientSpy.getCall(0);
         var args = call.args[0];
 
         assert.equal(args.method, 'POST');
-        assert.equal(args.url, v1.client.endpoint + '/apps/1/rooms');
+        assert.equal(args.url, v1.endpoint + '/apps/1/rooms');
+        assert.deepEqual(args.body, opts);
 
         done();
       });
     });
-    it('errors with invalid params', function() {
+    it('errors with invalid params - invalid properties', function() {
       assert.exception(function() {
-        return v1.apps.rooms.create({ app_id: 1, room_name: 'test' });
-      }, 'Callback must be supplied')
+        return v1.apps(1).rooms().create('test', function(){});
+      }, 'Invalid options supplied to create');
     });
-    it('errors with invalid params', function() {
+    it('errors with invalid params - no callback', function() {
       assert.exception(function() {
-        return v1.apps.rooms.create({ room_name: 'test'}, function() {});
-      }, 'Opts property app_id must be an integer or string');
-    });
-    it('errors with invalid params', function() {
-      assert.exception(function() {
-        return v1.apps.rooms.create(false, function() {});
-      }, 'Parameter opts must be an object');
-    });
-    it('errors with invalid params', function() {
-      assert.exception(function() {
-        return v1.apps.rooms.create({ app_id: 1 }, function() {});
-      }, 'Opts property room_name must be a string')
-    });
-  });
-  describe('all', function() {
-    it('is a GET to /apps/:id/rooms', function(done) {
-      v1.apps.rooms.all({
-        app_id: 1
-      }, function() {
-        var call = clientSpy.getCall(0) || {};
-        var args = call.args[0];
-
-        assert.equal(args.method, 'GET');
-        assert.equal(args.url, v1.client.endpoint + '/apps/1/rooms');
-
-        done();
-      });
-    });
-    it('is a GET to /apps/:id/rooms with pagination (legacy naming)',
-       function(done) {
-
-      v1.apps.rooms.all({
-        app_id: 1,
-        pageSize: 5,
-        pageNumber: 4,
-      }, function() {
-        var call = clientSpy.getCall(0) || {};
-        var args = call.args[0];
-
-        assert.equal(args.method, 'GET');
-        assert.equal(args.url, v1.client.endpoint + '/apps/1/rooms');
-        assert.deepEqual(args.qs, {
-          per_page: 5,
-          page: 4
-        });
-
-        done();
-      });
-    });
-    it('is a GET to /apps/:id/rooms with pagination', function(done) {
-      v1.apps.rooms.all({
-        app_id: 1,
-        per_page: 5,
-        page: 4
-      }, function() {
-        var call = clientSpy.getCall(0) || {};
-        var args = call.args[0];
-
-        assert.equal(args.method, 'GET');
-        assert.equal(args.url, v1.client.endpoint + '/apps/1/rooms');
-        assert.deepEqual(args.qs, {
-          per_page: 5,
-          page: 4
-        });
-
-        done();
-      });
-    });
-    it('errors with invalid params', function() {
-      assert.exception(function() {
-        return v1.apps.rooms.all();
-      }, 'Callback must be supplied');
+        return v1.apps(1).rooms().create({});
+      }, 'Callback is required for create');
     });
   });
 });

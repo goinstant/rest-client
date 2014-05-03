@@ -18,51 +18,69 @@ describe('Teams v1', function() {
       client_secret: 'fake client_secret',
       access_token: 'fake access_token'
     });
-    clientSpy = sinon.spy(v1.client, '_performRequest');
+    clientSpy = sinon.spy(v1, '_req');
   });
   afterEach(function() {
-    v1.client._performRequest.restore();
+    v1._req.restore();
   });
 
   describe('get', function() {
     it('is a GET to /teams/:id', function(done) {
-      v1.teams.get(1, function() {
+      v1.teams(1).get(function() {
         var call = clientSpy.getCall(0);
         var args = call.args[0];
-
+      
         assert.equal(args.method, 'GET');
-        assert.equal(args.url, v1.client.endpoint + '/teams/1');
+        assert.equal(args.url, v1.endpoint + '/teams/1');
 
         done();
       });
     });
-    it('errors with invalid params', function() {
+    it('errors with invalid params - no callback', function() {
       assert.exception(function() {
-        return v1.teams.get(1);
-      }, 'Callback must be supplied');
+        return v1.teams(1).get();
+      }, 'Callback is required for get');
     });
-    it('errors with invalid params', function() {
+    it('errors with invalid params - bad query params', function() {
       assert.exception(function() {
-        return v1.teams.get(undefined, function() {});
-      }, 'Parameter id must be an integer');
+        return v1.teams().get(undefined, function() {});
+      }, 'Invalid options supplied to get');
     });
   });
-  describe('all', function() {
-    it('is a GET to /teams', function(done) {
-      v1.teams.all(function() {
+  describe('get all', function() {
+    it('is a GET to /teams with pagination', function(done) {
+      v1.teams().get({
+        per_page: 4,
+        page: 2
+      }, function() {
         var call = clientSpy.getCall(0);
         var args = call.args[0];
 
         assert.equal(args.method, 'GET');
-        assert.equal(args.url, v1.client.endpoint + '/teams');
+        assert.equal(args.url, v1.endpoint + '/teams');
+        assert.deepEqual(args.qs, {
+          per_page: 4,
+          page: 2
+        });
 
         done();
       });
     });
-    it('errors with invalid params', function() {
+    it('is a GET to /teams', function(done) {
+      v1.teams().get(function() {
+        var call = clientSpy.getCall(0);
+        var args = call.args[0];
+      
+        assert.equal(args.method, 'GET');
+        assert.equal(args.url, v1.endpoint + '/teams');
+
+        done();
+      });
+    });
+    it('errors with invalid params - no callback', function() {
       assert.exception(function() {
-        v1.teams.all();
-      }, 'Callback must be supplied');
+        return v1.teams().get();
+      }, 'Callback is required for get');
     });
   });
   describe('create', function() {
@@ -71,31 +89,36 @@ describe('Teams v1', function() {
         display_name: 'Testing'
       };
 
-      v1.teams.update(1, opts, function() {
+      v1.teams().create(opts, function() {
         var call = clientSpy.getCall(0);
         var args = call.args[0];
 
-        assert.equal(args.method, 'PATCH');
-        assert.equal(args.url, v1.client.endpoint + '/teams/1');
-        assert.equal(args.body, JSON.stringify(opts));
+        assert.equal(args.method, 'POST');
+        assert.equal(args.url, v1.endpoint + '/teams');
+        assert.deepEqual(args.body, opts);
 
         done();
       });
     });
-    it('errors with invalid params', function() {
+    it('errors with invalid params - invalid properties', function() {
       assert.exception(function() {
-        return v1.teams.update(1, 'test', function() {});
-      }, 'Parameter opts must be an object');
+        return v1.teams().create('test', function() {});
+      }, 'New properties are required for create');
     });
-    it('errors with invalid params', function() {
+    it('errors with invalid params - no properties', function() {
       assert.exception(function() {
-        return v1.teams.update(1, 'test', function() {});
-      }, 'Parameter opts must be an object');
+        return v1.teams().create({}, function() {});
+      }, 'New properties are required for create');
     });
-    it('errors with invalid params', function() {
+    it('errors with invalid params - id added', function() {
       assert.exception(function() {
-        return v1.teams.update(1, { one: 'arg' });
-      }, 'Callback must be supplied');
+        return v1.teams(1).create({}, function() {});
+      }, 'Cannot create team with specific id');
+    });
+    it('errors with invalid params - no callback', function() {
+      assert.exception(function() {
+        return v1.teams().create({ one: 'arg' });
+      }, 'Callback is required for create');
     });
   });
   describe('update', function() {
@@ -104,127 +127,166 @@ describe('Teams v1', function() {
         display_name: 'Testing'
       };
 
-      v1.teams.update(1, opts, function() {
+      v1.teams(1).update(opts, function() {
         var call = clientSpy.getCall(0);
         var args = call.args[0];
-
+      
         assert.equal(args.method, 'PATCH');
-        assert.equal(args.url, v1.client.endpoint + '/teams/1');
-        assert.equal(args.body, JSON.stringify(opts));
+        assert.equal(args.url, v1.endpoint + '/teams/1');
+        assert.deepEqual(args.body, opts);
 
         done();
       });
     });
-    it('errors with invalid params', function() {
+    it('errors with invalid params - invalid properties', function() {
       assert.exception(function() {
-        v1.teams.update(1, 'test', function() {});
-      }, 'Parameter opts must be an object');
+        return v1.teams(1).update(null, function() {});
+      }, 'New properties are required for update');
     });
-    it('errors with invalid params', function() {
+    it('errors with invalid params - no properties', function() {
       assert.exception(function() {
-        v1.teams.update(1, { one: 'arg' });
-      }, 'Callback must be supplied');
+        return v1.teams(1).update({}, function() {});
+      }, 'New properties are required for update');
+    });
+    it('errors with invalid params - no team', function() {
+      assert.exception(function() {
+        return v1.teams().update({ name: 'new one' }, function() {});
+      }, 'Team identity required for update');
+    });
+    it('errors with invalid params - no callback', function() {
+      assert.exception(function() {
+        return v1.teams(1).update({ one: 'arg' });
+      }, 'Callback is required for update');
     });
   });
   describe('remove', function() {
     it('is a DELETE to /teams/:id', function(done) {
-      v1.teams.remove(1, function() {
+      v1.teams(1).remove(function() {
         var call = clientSpy.getCall(0);
         var args = call.args[0];
-
+      
         assert.equal(args.method, 'DELETE');
-        assert.equal(args.url, v1.client.endpoint + '/teams/1');
+        assert.equal(args.url, v1.endpoint + '/teams/1');
 
         done();
       });
     });
-    it('errors with invalid params', function() {
+    it('errors with invalid params - no team', function() {
       assert.exception(function() {
-        v1.teams.remove(1);
-      }, 'Callback must be supplied');
+        return v1.teams().remove(function() {});
+      }, 'Team identity required for remove');
     });
-    it('errors with invalid params', function() {
+    it('errors with invalid params - bad query params', function() {
       assert.exception(function() {
-        v1.teams.remove(null, function() {});
-      }, 'Parameter id must be an integer');
+        return v1.teams(1).remove(undefined, function() {});
+      }, 'Invalid options supplied to remove');
+    });
+    it('errors with invalid params - no callback', function() {
+      assert.exception(function() {
+        return v1.teams(1).remove();
+      }, 'Callback is required for remove');
     });
   });
-  describe('devs.add', function() {
-    it('is a POST to /teams/:id/devs', function(done) {
-      v1.teams.devs.add(1, {
-        developer_id: 2
-      }, function() {
-        var call = clientSpy.getCall(0);
-        var args = call.args[0];
+  describe('devs', function() {
+    describe('get all', function() {
+      it('is a GET to /teams/:team/devs with pagination', function(done) {
+        v1.teams(1).devs().get({
+          per_page: 4,
+          page: 2
+        }, function() {
+          var call = clientSpy.getCall(0);
+          var args = call.args[0];
 
-        assert.equal(args.method, 'POST');
-        assert.equal(args.url, v1.client.endpoint + '/teams/1/devs');
-        assert.equal(args.body, '{"developer":2}');
+          assert.equal(args.method, 'GET');
+          assert.equal(args.url, v1.endpoint + '/teams/1/devs');
+          assert.deepEqual(args.qs, {
+            per_page: 4,
+            page: 2
+          });
 
-        done();
-      });
-    });
-    it('errors with invalid params', function() {
-      assert.exception(function() {
-        v1.teams.devs.add(1, {
-          developer_id: 2
+          done();
         });
-      }, 'Callback must be supplied');
-    });
-    it('errors with invalid params', function() {
-      assert.exception(function() {
-        v1.teams.devs.add(null, null, function() {});
-      }, 'Parameter id must be an integer');
-    });
-  });
-  describe('devs.remove', function() {
-    it('is a DELETE to /teams/:id/devs/:dev', function(done) {
-      v1.teams.devs.remove(1, {
-        developer_id: 2
-      }, function() {
-        var call = clientSpy.getCall(0);
-        var args = call.args[0];
-
-        assert.equal(args.method, 'DELETE');
-        assert.equal(args.url, v1.client.endpoint + '/teams/1/devs/2');
-
-        done();
       });
-    });
-    it('errors with invalid params', function() {
-      assert.exception(function() {
-        return v1.teams.devs.remove(1, {
-          developer_id: 2
+      it('is a GET to /teams/:team/devs', function(done) {
+        v1.teams(1).devs().get(function() {
+          var call = clientSpy.getCall(0);
+          var args = call.args[0];
+
+          assert.equal(args.method, 'GET');
+          assert.equal(args.url, v1.endpoint + '/teams/1/devs');
+
+          done();
         });
-      }, 'Callback must be supplied');
-    });
-    it('errors with invalid params', function() {
-      assert.exception(function() {
-        return v1.teams.devs.remove(null, null, function() {});
-      }, 'Parameter id must be an integer');
-    });
-  });
-  describe('devs.all', function() {
-    it('is a GET to /teams/:id/devs', function(done) {
-      v1.teams.devs.all(1, function() {
-        var call = clientSpy.getCall(0);
-        var args = call.args[0];
-
-        assert.equal(args.method, 'GET');
-        assert.equal(args.url, v1.client.endpoint + '/teams/1/devs');
-
-        done();
+      });
+      it('errors with invalid params - no callback', function() {
+        assert.exception(function() {
+          return v1.teams(1).devs().get();
+        }, 'Callback is required for get');
       });
     });
-    it('errors with invalid params', function() {
-      assert.exception(function() {
-        return v1.teams.devs.all(1);
-      }, 'Callback must be supplied');
+    describe('remove', function() {
+      it('is a DELETE to /teams/:team/devs/:id', function(done) {
+        v1.teams(1).devs(2).remove(function() {
+          var call = clientSpy.getCall(0);
+          var args = call.args[0];
+        
+          assert.equal(args.method, 'DELETE');
+          assert.equal(args.url, v1.endpoint + '/teams/1/devs/2');
+
+          done();
+        });
+      });
+      it('errors with invalid params - no dev', function() {
+        assert.exception(function() {
+          return v1.teams(1).devs().remove(function() {});
+        }, 'Developer identity required for remove');
+      });
+      it('errors with invalid params - bad query params', function() {
+        assert.exception(function() {
+          return v1.teams(1).devs(2).remove(undefined, function() {});
+        }, 'Invalid options supplied to remove');
+      });
+      it('errors with invalid params - no callback', function() {
+        assert.exception(function() {
+          return v1.teams(1).devs(2).remove();
+        }, 'Callback is required for remove');
+      });
     });
-    it('errors with invalid params', function() {
-      assert.exception(function() {
-        return v1.teams.devs.remove('not a number', function() { });
-      }, 'Parameter id must be an integer');
+    describe('add', function() {
+      it('is a POST to /teams/:team/devs', function(done) {
+        v1.teams(1).devs().add({
+          id: 2
+        }, function() {
+          var call = clientSpy.getCall(0);
+          var args = call.args[0];
+        
+          assert.equal(args.method, 'POST');
+          assert.equal(args.url, v1.endpoint + '/teams/1/devs');
+          assert.deepEqual(args.body, { id: 2 });
+
+          done();
+        });
+      });
+      it('errors with invalid params - no id', function() {
+        assert.exception(function() {
+          return v1.teams(1).devs().add(function() {});
+        }, 'Property id required for add');
+      });
+      it('errors with invalid params - bad query params', function() {
+        assert.exception(function() {
+          return v1.teams(1).devs().add(undefined, function() {});
+        }, 'Invalid options supplied to add');
+      });
+      it('errors with invalid params - no callback', function() {
+        assert.exception(function() {
+          return v1.teams(1).devs(2).add();
+        }, 'Developer id must be passed to add');
+      });
+      it('errors with invalid params - no callback', function() {
+        assert.exception(function() {
+          return v1.teams(1).devs().add();
+        }, 'Callback is required for add');
+      });
     });
   });
 });

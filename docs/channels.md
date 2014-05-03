@@ -2,26 +2,22 @@
 
 # channels
 
+[Channels](https://developers.goinstant.com/v1/rest-api/channels.html) are a full-duplex messaging interface for your application within GoInstant.
+
+## Parameters
+
+An application may be identified by its ID or its name (app_id, app_name).
+
+A room must be identified with the same identifier type as the application specified (room_id, room_name).
+
+## Methods
+
 ### #message
 
-Sends a message across the channel
+Sends a message across the channel.
 
 ```js
-/**
- * @param {options} object
- * @param {options.app_id} id of the app
- * @param {options.room_id} id of the room
- * @param {options.channel} string the channel name
- * @param {options.value} value of the message
- * @param {options.options} https://developers.goinstant.com/v1/javascript_api/key/set.html
- */
-
-var opts = {
-  app_id: 1,
-  room_id: 3,
-  channel: 'mychannel',
-  value: 'myval'
-};
-
-client.channels.message(opts, function(err, value) { });
+client.channels(:channel, params).message(value, callback(err, body, response))
 ```
+
+Params: app (app_id, app_name), room (room_id, room_name)

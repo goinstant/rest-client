@@ -2,121 +2,44 @@
 
 # rooms
 
-[rooms](https://teams.goinstant.com/v1/rest-client/rooms) is the route to access statistics about your applications.
+[Rooms](https://teams.goinstant.com/v1/rest-client/rooms) allows you to access statistics about, and create new rooms for your applications.
 
-### #all
+## Parameters
 
-Get all rooms
+An application may be identified by its ID or its name (app_id, app_name).
 
-```js
-/**
- * @param {options} object
- * @param {options.app_id} id of the app
- * @param {function} callback
- */
+A room must be identified with the same identifier type as the application specified (room_id, room_name).
 
-client.apps.rooms.all({
-  app_id: 2
-}, function(err, rooms, res) { });
-```
+## Methods
 
-```json
-[
-  {
-    "id": 1,
-    "app_id": 2,
-    "name": "my-room",
-    "created_at": "1979-01-01 00:00:01-00",
-    "destroyed_at": "1979-01-01 00:10:01-00",
-    "users": 4
-  }
-]
-```
-
-### #get
-
-Get a single room by its ID.
+### create
 
 ```js
-/**
- * @param {integer} id
- * @param {options} object
- * @param {options.app_id} id of the app
- * @param {function} callback
- */
-
-client.apps.rooms.get(1, {
-  app_id: 2
-}, function(err, rooms, res) { });
+client.apps(:app).rooms().create(params, callback(err, body, callback))
 ```
 
-```json
-{
-  "id": 1,
-  "app_id": 2,
-  "name": "my-room",
-  "created_at": "1979-01-01 00:00:01-00",
-  "destroyed_at": "1979-01-01 00:10:01-00",
-  "users": 4
-}
-```
+### get
 
-### #create
-
-Create a single room with a specified name.
+Retrieve a specific room's statistics.
 
 ```js
-/**
- * @param {options} object
- * @param {options.app_id} id of the app
- * @param {options.room_name} name for the room
- * @param {function} callback
- */
-
-client.apps.rooms.create({
-  app_id: 2,
-  room_name: 'my-room-name'
-}, function(err, rooms, res) { });
+client.apps(:app).rooms(:room).get(callback(err, body, response))
 ```
 
-```json
-{
-  "id": 2,
-  "app_id": 2,
-  "name": "my-room-name",
-  "created_at": "1979-01-01 00:00:01-00",
-  "destroyed_at": null,
-  "users": 0
-}
-```
-
-### #users
-
-Retrieve all users logged for a particular room.
+Retrieve all rooms.
 
 ```js
-/**
- * @param {object} team
- * @param {options} object
- * @param {options.app_id} id of the app
- * @param {function} callback
- */
-
-client.apps.rooms.users(1, {
-  app_id: 2
-}, function(err, users, res) { });
+client.apps(:app).rooms().get(options, callback(err, body, response))
 ```
 
-```json
-[
-  {
-    "id": 53,
-    "room_id": 1,
-    "session_id": "JF5xKPfK0ImFAKEBAAAl",
-    "display_name": "Guest",
-    "referer": "https://example.com/my-app",
-    "joined_at": "1979-01-01 00:00:01-00",
-    "left_at": "1979-01-01 00:10:01-00"
-  }
-]
+Params: name
+
+Options: sort, direction, pageSize, pageNumber
+
+### users
+
+```js
+client.apps(:app).rooms(:room).users().get(options, callback(err, body, response))
 ```
+
+Options: sort, direction, pageSize, pageNumber
