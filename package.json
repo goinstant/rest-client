@@ -1,6 +1,6 @@
 {
   "name": "goinstant-rest",
-  "version": "1.2.5",
+  "version": "1.2.6",
   "description": "Client for GoInstant's REST API",
   "main": "index.js",
   "repository": {
